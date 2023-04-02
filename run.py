@@ -69,13 +69,19 @@ def calculate_floor_data(sales_row):
     print("Calculating products on the store floor..\n")
     storage = SHEET.worksheet("storage").get_all_values()
     storage_row = storage[-1]
-    print(storage_row)
+
+    floor_data =[]
+    for storage, sales in zip(storage_row, sales_row):
+        floor = int(storage) - sales
+        floor_data.append(floor)
+    return floor_data
 
 
 def main():
     data = get_sales_data()
     sales_data=[int(num) for num in data]
     update_sales_worksheet(sales_data)
-    calculate_floor_data(sales_data)
+    new_floor_data = calculate_floor_data(sales_data)
+    print(new_floor_data)
 
 main()
