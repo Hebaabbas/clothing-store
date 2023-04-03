@@ -67,6 +67,12 @@ def update_floor_worksheet(data):
     floor_worksheet.append_row(data)
     print("Floor-Worksheet is successfully updated.\n")
 
+def update_worksheet(data, worksheet):
+    print(f"Updating {worksheet} worksheet...\n")
+    worksheet_to_update = SHEET.worksheet(worksheet)
+    worksheet_to_update.append_row(data)
+    print(f"{worksheet} Worksheet is successfully updated")
+
 def calculate_floor_data(sales_row):
     """
     This function will calculate how many products are available on the store floor.
@@ -89,8 +95,8 @@ def calculate_floor_data(sales_row):
 def main():
     data = get_sales_data()
     sales_data=[int(num) for num in data]
-    update_sales_worksheet(sales_data)
+    update_worksheet(sales_data, "sales")
     new_floor_data = calculate_floor_data(sales_data)
-    update_floor_worksheet(new_floor_data)
+    update_worksheet(new_floor_data, "floor")
 
 main()
