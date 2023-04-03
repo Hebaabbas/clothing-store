@@ -56,7 +56,16 @@ def update_sales_worksheet(data):
     print("Updating sales worksheet...\n")
     sales_worksheet = SHEET.worksheet("sales")
     sales_worksheet.append_row(data)
-    print("Worksheet is successfully updated.\n")
+    print("Sales-Worksheet is successfully updated.\n")
+
+def update_floor_worksheet(data):
+    """
+    Updates floor values in the worksheet as well as it adds new row with the new added values
+    """
+    print("Updating floor worksheet...\n")
+    floor_worksheet = SHEET.worksheet("floor")
+    floor_worksheet.append_row(data)
+    print("Floor-Worksheet is successfully updated.\n")
 
 def calculate_floor_data(sales_row):
     """
@@ -82,6 +91,6 @@ def main():
     sales_data=[int(num) for num in data]
     update_sales_worksheet(sales_data)
     new_floor_data = calculate_floor_data(sales_data)
-    print(new_floor_data)
+    update_floor_worksheet(new_floor_data)
 
 main()
