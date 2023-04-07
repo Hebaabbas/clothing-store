@@ -1,7 +1,6 @@
 import gspread
 import sys
 from google.oauth2.service_account import Credentials
-from pprint import pprint
 from datetime import datetime
 
 SCOPE = [
@@ -48,7 +47,7 @@ def get_sales_data():
         print("Data provided represents these products in this order: [shirt, jeans, dress, shoe, bag] and the maximum amount of products per item we can sell each day is 30. ")
         print("Data shold be as this Example: 11,11,11,11,11\n")
 
-        data_str = input("Enter your data values here: ")
+        data_str = input("Enter your data values here: \n")
 
         sales_data = data_str.split(",")
 
