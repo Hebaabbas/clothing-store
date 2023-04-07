@@ -2,6 +2,7 @@ import gspread
 import sys
 from google.oauth2.service_account import Credentials
 from pprint import pprint
+from datetime import datetime
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -23,11 +24,11 @@ def store_ready():
     while True:
         store_condition = input("Is the business day over now and you have all the products you've sold counted? please insert yes or no: ")
         if store_condition.lower() == "yes":
-            print("Great! Now you can document the amount of products sold.")
-            break
+            print("Great! Now you can document the amount of products sold on the end of your business day.")
+            return True
         elif store_condition.lower() == "no":
             print("Please come back when the business day is over and you have all the products sold counted.")
-            sys.exit()
+            return False
         else:
             print("You did not insert a valid option, please give it another try")
             continue
@@ -35,16 +36,17 @@ def store_ready():
        
 def get_sales_data():
     """
-    Get sales values input from the user
+    This function is to give the store a name, specifies the business day date. And its for getting the data values of the sold products.
     """
+    
     while True:
-
+        today = datetime.now().date()
 
         print("Welcome to " + store_name.capitalize() + "'s sales data collector.")
-        print("Please enter how many products were sold the last business day.")
+        print("Please enter how many products were sold on the date of " + str(today))
         print("Data provided are to be 5 different data values, separated by commas.")
-        print("Data provided represents these products in this order: [shirt, jeans, dress, shoe, bag]")
-        print("Data shold be as this Example: 11,22,33,44,55\n")
+        print("Data provided represents these products in this order: [shirt, jeans, dress, shoe, bag] and the maximum amount of products per item we can sell each day is 30. ")
+        print("Data shold be as this Example: 11,11,11,11,11\n")
 
         data_str = input("Enter your data values here: ")
 
@@ -53,12 +55,15 @@ def get_sales_data():
         if validate_data(sales_data):
             print("Data is valid!")
             break
+    sales_data = [int(value) for value in sales_data]
     return sales_data
+
+    """ add here the condition statement that max products are 30. add also to the equation of floor below, delete storage and add statement notice to refill."""
 
 def validate_data(values):
     """
     This function is to check if there is exactly 5 values in our data
-    and to check if all datas can be converted into integers
+    and to check if all datas can be converted into integers.
     """
     try:
         [int(value) for value in values]
@@ -71,22 +76,6 @@ def validate_data(values):
         return False
 
     return True
-   
-
-def calculate_sales_worksheet(data):
-    """to calculate how many products in total we sold at the end of the day"""
-    print("Calculating our sales...\n")
-    total_sales = SHEET.worksheet("sales")
-    sales_worksheet.append_row(data)
-    print("Sales-Worksheet is successfully updated.\n")
-"""
-def update_floor_worksheet(data):
-    "Updates floor values in the worksheet as well as it adds new row with the new added values"
-    print("Updating floor worksheet...\n")
-    floor_worksheet = SHEET.worksheet("floor")
-    floor_worksheet.append_row(data)
-    print("Floor-Worksheet is successfully updated.\n")
-"""
 
 def update_worksheet(data, worksheet):
     print(f"Updating {worksheet} worksheet...\n")
@@ -103,24 +92,29 @@ def calculate_floor_data(sales_row):
     A negative number means the number of products that we had to get from the storage in order to refill the store.
     """
     print("Calculating products on the store floor..\n")
-    storage = SHEET.worksheet("storage").get_all_values()
-    storage_row = storage[-1]
-
+    storage = 30
     floor_data =[]
-    for storage, sales in zip(storage_row, sales_row):
-        floor = int(storage) - sales
+    for sales in sales_row:
+        floor = storage - sales
         floor_data.append(floor)
     return floor_data
+
+def calculate_refill_data(floor, storage):
+    refill_count = storage - sum(floor)
+    return refill_count if refill_count > 0 else 0      
 
 
 def main():
     store = store_ready()
     data = get_sales_data()
-    sales_data=[int(num) for num in data]
-    update_worksheet(sales_data, "sales")
-    new_floor_data = calculate_floor_data(sales_data)
-    update_worksheet(new_floor_data, "floor")
-    storage_data= calculate_storage_data(storage_row)
-    update_worksheet(storage_data, "storage")
+    if validate_data(data):
+        sales_data = [int(num) for num in data]
+        update_worksheet(sales_data, "sales")
+        floor_data = calculate_floor_data(sales_data)
+        update_worksheet(floor_data, "floor")
+        refill_count = calculate_refill_data(floor_data, 150)
+        print(f"{refill_count} products need to be refilled for tomorrow")
+        print("Thank you for using our system.")
+
 
 main()
