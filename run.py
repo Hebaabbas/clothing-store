@@ -58,8 +58,6 @@ def get_sales_data():
     sales_data = [int(value) for value in sales_data]
     return sales_data
 
-    """ add here the condition statement that max products are 30. add also to the equation of floor below, delete storage and add statement notice to refill."""
-
 def validate_data(values):
     """
     This function is to check if there is exactly 5 values in our data
@@ -85,11 +83,8 @@ def update_worksheet(data, worksheet):
 
 def calculate_floor_data(sales_row):
     """
-    This function will calculate how many products are available on the store floor.
-    That means it will calculate how many products we took from our storage to refill the store and
-    how many products that we havent sold and still on our store floor.
-    A positive number means the number of products that was extra out in the store, not sold
-    A negative number means the number of products that we had to get from the storage in order to refill the store.
+    This function will calculate how many products are available on the store floor (still in the store to sell).
+    That means it will calculate how many products we have left from our storage (30 max per product) after our selling business day.
     """
     print("Calculating products on the store floor..\n")
     storage = 30
